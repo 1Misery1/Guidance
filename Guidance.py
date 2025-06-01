@@ -1,10 +1,8 @@
 # guidance_pyqt_mod.py
 import heapq
 import sys
-# import tkinter as tk # Tkinter不再是主要GUI库，可以移除相关导入以保持代码整洁
-# from tkinter import messagebox # 同样，QMessageBox将替代它
 from PyQt5 import QtWidgets, QtCore, QtGui
-from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QRadioButton, QCheckBox, QSlider, QPushButton, QTextEdit, QFrame, QButtonGroup, QMessageBox
+from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QRadioButton, QCheckBox, QSlider, QPushButton, QTextEdit, QFrame, QButtonGroup, QMessageBox, QGroupBox # Import QGroupBox
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 import matplotlib.pyplot as plt
@@ -64,7 +62,7 @@ class NavigationApp:
             dist = self.haversine_distance(coord_current, coord_goal)
             return dist * n
         else:  # 默认使用距离
-            return self.haversine_distance(coord_current, goal) # 修正为coord_goal
+            return self.haversine_distance(coord_current, coord_goal) # 修正为coord_goal
 
     def multi_criteria_weight(self, edge_weights: Dict, criteria: Dict[str, float]) -> float:
         """基于多标准计算综合权重"""
@@ -315,73 +313,90 @@ class NavigationGUI(QMainWindow):
         self.current_path = None
 
         self.setWindowTitle("智能导航系统 (多算法版)")
-        self.setGeometry(100, 100, 1200, 850) # 设置窗口的初始位置和大小
+        self.setGeometry(100, 100, 1920, 1080) # Increased window size for more space
 
-        self.central_widget = QWidget() # 创建一个中心部件
-        self.setCentralWidget(self.central_widget) # 将中心部件设置为主窗口的中心部件
-        self.main_layout = QHBoxLayout(self.central_widget) # 主布局采用水平布局
+        self.central_widget = QWidget()
+        self.setCentralWidget(self.central_widget)
+        self.main_layout = QHBoxLayout(self.central_widget)
 
         self.create_widgets()
         self.initialize_map()
         self.draw_map()
 
-        # 应用一些简单的 QSS 样式
         self.apply_styles()
 
     def apply_styles(self):
         self.setStyleSheet("""
             QMainWindow {
-                background-color: #f0f0f0; /* 浅灰色背景 */
+                background-color: #e0e5ec; /* Softer background */
             }
             QFrame {
-                background-color: #ffffff; /* 白色背景 */
-                border-radius: 8px; /* 圆角边框 */
-                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 阴影效果 */
-                padding: 15px; /* 内边距 */
+                background-color: #ffffff;
+                border-radius: 12px; /* More rounded corners */
+                box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15); /* Stronger shadow */
+                padding: 20px; /* Increased padding */
             }
             QLabel {
-                font-size: 14px;
+                font-size: 15px; /* Slightly larger font */
                 font-weight: bold;
-                color: #333333; /* 深灰色文本 */
-                margin-bottom: 5px;
+                color: #2c3e50; /* Darker, more professional text */
+                margin-bottom: 8px; /* More spacing below labels */
             }
             QRadioButton, QCheckBox {
-                font-size: 13px;
-                color: #555555;
-                padding: 3px 0;
+                font-size: 14px;
+                color: #34495e;
+                padding: 5px 0; /* Increased padding */
             }
             QSlider::groove:horizontal {
-                border: 1px solid #bbb;
-                height: 8px;
-                background: #ddd;
+                border: 1px solid #aeb6bf; /* Softer border */
+                height: 10px; /* Thicker groove */
+                background: #d9e0e7; /* Softer background */
                 margin: 2px 0;
-                border-radius: 4px;
+                border-radius: 5px;
             }
             QSlider::handle:horizontal {
-                background: #4CAF50; /* 绿色滑块 */
-                border: 1px solid #333;
-                width: 18px;
-                margin: -5px 0; /* handle is specified off center to make it appear centered */
-                border-radius: 9px;
+                background: #27ae60; /* More vibrant green for handle */
+                border: 1px solid #1e8449;
+                width: 20px; /* Larger handle */
+                margin: -6px 0;
+                border-radius: 10px;
             }
             QPushButton {
-                background-color: #007bff; /* 蓝色按钮 */
+                background-color: #3498db; /* A friendly blue */
                 color: white;
                 border: none;
-                padding: 10px 20px;
-                font-size: 15px;
-                border-radius: 5px;
-                margin-top: 15px;
+                padding: 12px 25px; /* Larger padding */
+                font-size: 16px; /* Larger font */
+                border-radius: 8px; /* More rounded buttons */
+                margin-top: 20px; /* More space above button */
+                font-weight: bold;
             }
             QPushButton:hover {
-                background-color: #0056b3; /* 鼠标悬停时变深 */
+                background-color: #2980b9; /* Darker blue on hover */
             }
             QTextEdit {
-                border: 1px solid #cccccc;
-                border-radius: 5px;
-                padding: 5px;
-                font-size: 13px;
-                background-color: #fdfdfd;
+                border: 1px solid #b0c4de; /* Softer border color */
+                border-radius: 8px;
+                padding: 10px; /* Increased padding */
+                font-size: 14px;
+                background-color: #f8faff; /* Slightly off-white background */
+                color: #2c3e50;
+            }
+            QGroupBox {
+                font-size: 16px;
+                font-weight: bold;
+                color: #2c3e50;
+                border: 1px solid #b0c4de;
+                border-radius: 8px;
+                margin-top: 10px;
+                padding-top: 10px;
+            }
+            QGroupBox::title {
+                subcontrol-origin: margin;
+                subcontrol-position: top center; /* Title centered */
+                padding: 0 3px;
+                background-color: #e0e5ec;
+                border-radius: 3px;
             }
         """)
 
@@ -391,9 +406,8 @@ class NavigationGUI(QMainWindow):
         control_layout = QVBoxLayout(control_frame) # 使用垂直布局
 
         # 路径优化目标
-        objective_label = QLabel("路径优化目标:")
-        control_layout.addWidget(objective_label)
-
+        objective_group_box = QGroupBox("路径优化目标") # Use QGroupBox for grouping
+        objective_layout = QVBoxLayout(objective_group_box)
         self.weight_group = QButtonGroup(self) # 创建一个按钮组，确保单选
         self.radio_time = QRadioButton("最短时间")
         self.radio_time.setChecked(True) # 默认选中
@@ -406,15 +420,16 @@ class NavigationGUI(QMainWindow):
         self.weight_group.addButton(self.radio_traffic, id=3)
         self.weight_group.addButton(self.radio_comprehensive, id=4)
 
-        control_layout.addWidget(self.radio_time)
-        control_layout.addWidget(self.radio_distance)
-        control_layout.addWidget(self.radio_traffic)
-        control_layout.addWidget(self.radio_comprehensive)
+        objective_layout.addWidget(self.radio_time)
+        objective_layout.addWidget(self.radio_distance)
+        objective_layout.addWidget(self.radio_traffic)
+        objective_layout.addWidget(self.radio_comprehensive)
+        control_layout.addWidget(objective_group_box) # Add the group box to the main layout
+        control_layout.addSpacing(15) # Add spacing after the group box
 
         # 算法选择
-        algo_label = QLabel("选择搜索算法:")
-        control_layout.addWidget(algo_label)
-
+        algo_group_box = QGroupBox("选择搜索算法") # Use QGroupBox for grouping
+        algo_layout = QVBoxLayout(algo_group_box)
         self.algo_group = QButtonGroup(self)
         self.radio_astar = QRadioButton("A* 搜索")
         self.radio_astar.setChecked(True)
@@ -425,26 +440,29 @@ class NavigationGUI(QMainWindow):
         self.algo_group.addButton(self.radio_dijkstra, id=2)
         self.algo_group.addButton(self.radio_greedy_bfs, id=3)
 
-        control_layout.addWidget(self.radio_astar)
-        control_layout.addWidget(self.radio_dijkstra)
-        control_layout.addWidget(self.radio_greedy_bfs)
+        algo_layout.addWidget(self.radio_astar)
+        algo_layout.addWidget(self.radio_dijkstra)
+        algo_layout.addWidget(self.radio_greedy_bfs)
+        control_layout.addWidget(algo_group_box) # Add the group box to the main layout
+        control_layout.addSpacing(15)
 
         # 约束条件
-        constraints_label = QLabel("约束条件:")
-        control_layout.addWidget(constraints_label)
-
+        constraints_group_box = QGroupBox("约束条件") # Use QGroupBox for grouping
+        constraints_layout = QVBoxLayout(constraints_group_box)
         self.check_construction = QCheckBox("避开施工区域")
         self.check_construction.setChecked(True)
-        control_layout.addWidget(self.check_construction)
+        constraints_layout.addWidget(self.check_construction)
 
         min_width_label = QLabel("最小道路宽度:")
-        control_layout.addWidget(min_width_label)
+        constraints_layout.addWidget(min_width_label)
         self.slider_min_width = QSlider(QtCore.Qt.Horizontal) # 水平滑动条
         self.slider_min_width.setRange(0, 15) # 设置范围
         self.slider_min_width.setValue(0) # 默认值
         self.slider_min_width.setTickInterval(1) # 设置刻度间隔
         self.slider_min_width.setTickPosition(QSlider.TicksBelow) # 刻度在下方显示
-        control_layout.addWidget(self.slider_min_width)
+        constraints_layout.addWidget(self.slider_min_width)
+        control_layout.addWidget(constraints_group_box) # Add the group box to the main layout
+        control_layout.addSpacing(20)
 
         # 计算路径按钮
         calculate_button = QPushButton("计算路径")
@@ -452,17 +470,18 @@ class NavigationGUI(QMainWindow):
         control_layout.addWidget(calculate_button)
 
         # 路径信息显示
-        info_label = QLabel("路径信息:")
-        control_layout.addWidget(info_label)
+        info_group_box = QGroupBox("路径信息") # Use QGroupBox for grouping
+        info_layout = QVBoxLayout(info_group_box)
         self.path_info_text = QTextEdit()
         self.path_info_text.setReadOnly(True) # 设置为只读
-        self.path_info_text.setMinimumHeight(200) # 增加高度
-        control_layout.addWidget(self.path_info_text)
+        self.path_info_text.setMinimumHeight(250) # Increased height
+        info_layout.addWidget(self.path_info_text)
+        control_layout.addWidget(info_group_box) # Add the group box to the main layout
 
         control_layout.addStretch(1) # 在底部添加伸展器，使内容靠上对齐
 
         # 右侧地图可视化区域
-        self.figure = Figure(figsize=(8, 6))
+        self.figure = Figure(figsize=(16, 9))
         self.ax = self.figure.add_subplot(111)
         self.canvas = FigureCanvas(self.figure)
         self.canvas.mpl_connect('button_press_event', self.on_map_click) # 连接 Matplotlib 的点击事件
@@ -559,27 +578,28 @@ class NavigationGUI(QMainWindow):
         self.ax.set_yticks([])
         self.ax.set_xlabel("")
         self.ax.set_ylabel("")
+        self.ax.set_facecolor('#f5f5f5') # Softer map background color
 
         for node1, node2, weights in self.app.road_segments:
             if node1 not in self.app.node_coordinates or node2 not in self.app.node_coordinates: continue
             x1, y1 = self.app.node_coordinates[node1]
             x2, y2 = self.app.node_coordinates[node2]
             road_width = weights.get('road_width', 6)
-            line_width = road_width / 2
+            line_width = road_width / 2.5 # Slightly thinner lines for clarity
             construction = weights.get('construction', 0)
             congestion = weights.get('congestion', 1.0)
             color = 'grey'
             if construction > 0.3:
-                color = 'black'
+                color = '#555555' # Darker grey/black for construction
             else:
                 if congestion < 1.2:
-                    color = 'green'
+                    color = '#28a745' # Bootstrap green
                 elif congestion < 1.5:
-                    color = 'yellow'
+                    color = '#ffc107' # Bootstrap yellow/orange
                 else:
-                    color = 'red'
+                    color = '#dc3545' # Bootstrap red
             linestyle = '--' if construction > 0.3 else '-'
-            self.ax.plot([x1, x2], [y1, y2], color=color, linewidth=line_width, linestyle=linestyle, alpha=0.7)
+            self.ax.plot([x1, x2], [y1, y2], color=color, linewidth=line_width, linestyle=linestyle, alpha=0.8)
 
         for node, (x, y) in self.app.node_coordinates.items():
             has_construction = False
@@ -588,18 +608,18 @@ class NavigationGUI(QMainWindow):
                     if weights.get('construction', 0) > 0.3:
                         has_construction = True
                         break
-            color = 'orange' if has_construction else 'blue'
-            self.ax.plot(x, y, 'o', color=color, markersize=8)
-            self.ax.annotate(node, (x + 0.5, y + 0.5), fontsize=10)
+            color = '#fd7e14' if has_construction else '#007bff' # Orange for construction, blue for normal
+            self.ax.plot(x, y, 'o', color=color, markersize=9, alpha=0.9)
+            self.ax.annotate(node, (x + 0.5, y + 0.5), fontsize=10, color='#333333', weight='bold') # Node label styling
 
         if self.selected_start and self.selected_start in self.app.node_coordinates:
             x, y = self.app.node_coordinates[self.selected_start]
-            self.ax.plot(x, y, 'o', color='green', markersize=12, alpha=0.8, label='起点')
-            self.ax.annotate("起点", (x + 1, y + 1), fontsize=12, color='green')
+            self.ax.plot(x, y, 'o', color='#28a745', markersize=14, alpha=0.9, label='起点') # Green for start
+            self.ax.annotate("起点", (x + 1, y + 1.5), fontsize=12, color='#28a745', weight='bold')
         if self.selected_goal and self.selected_goal in self.app.node_coordinates:
             x, y = self.app.node_coordinates[self.selected_goal]
-            self.ax.plot(x, y, 'o', color='purple', markersize=12, alpha=0.8, label='终点')
-            self.ax.annotate("终点", (x + 1, y + 1), fontsize=12, color='purple')
+            self.ax.plot(x, y, 'o', color='#6f42c1', markersize=14, alpha=0.9, label='终点') # Purple for goal
+            self.ax.annotate("终点", (x + 1, y + 1.5), fontsize=12, color='#6f42c1', weight='bold')
 
         if self.current_path and self.current_path['success']:
             path = self.current_path['path']
@@ -608,27 +628,38 @@ class NavigationGUI(QMainWindow):
                 if node1 not in self.app.node_coordinates or node2 not in self.app.node_coordinates: continue
                 x1, y1 = self.app.node_coordinates[node1]
                 x2, y2 = self.app.node_coordinates[node2]
-                self.ax.plot([x1, x2], [y1, y2], 'r-', linewidth=3, alpha=0.9)
+                self.ax.plot([x1, x2], [y1, y2], '#007bff', linewidth=4, alpha=0.9, zorder=5) # Distinct blue for path, higher zorder
 
-        self.ax.set_title("智能导航地图")
+        self.ax.set_title("智能导航地图", fontsize=16, color='#2c3e50', pad=15) # Title styling
         self.ax.grid(False)
 
         # 重建图例以避免重复并确保所有元素都显示
         handles, labels = self.ax.get_legend_handles_labels()
         static_handles = [
-            plt.Line2D([0], [0], color='green', linestyle='-', linewidth=2, label='畅通道路'),
-            plt.Line2D([0], [0], color='yellow', linestyle='-', linewidth=2, label='缓行道路'),
-            plt.Line2D([0], [0], color='red', linestyle='-', linewidth=2, label='拥堵道路'),
-            plt.Line2D([0], [0], color='black', linestyle='--', linewidth=2, label='施工道路'),
-            plt.Line2D([0], [0], marker='o', color='blue', label='正常路口', linestyle='None', markersize=8),
-            plt.Line2D([0], [0], marker='o', color='orange', label='施工路口附近', linestyle='None', markersize=8),
-            plt.Line2D([0], [0], color='red', linestyle='-', linewidth=3, label='规划路径')
+            plt.Line2D([0], [0], color='#28a745', linestyle='-', linewidth=2, label='畅通道路'),
+            plt.Line2D([0], [0], color='#ffc107', linestyle='-', linewidth=2, label='缓行道路'),
+            plt.Line2D([0], [0], color='#dc3545', linestyle='-', linewidth=2, label='拥堵道路'),
+            plt.Line2D([0], [0], color='#555555', linestyle='--', linewidth=2, label='施工道路'),
+            plt.Line2D([0], [0], marker='o', color='#007bff', label='正常路口', linestyle='None', markersize=8),
+            plt.Line2D([0], [0], marker='o', color='#fd7e14', label='施工路口附近', linestyle='None', markersize=8),
+            plt.Line2D([0], [0], color='#007bff', linestyle='-', linewidth=3, label='规划路径')
         ]
         existing_labels = set(labels)
         unique_static_handles = [h for h in static_handles if h.get_label() not in existing_labels]
 
-        self.ax.legend(handles=handles + unique_static_handles, loc='upper right', fontsize='small')
+        self.ax.legend(handles=handles + unique_static_handles,
+                       loc='upper left', # Changed legend location
+                       bbox_to_anchor=(1.02, 1), # Place legend outside the plot area on the right
+                       borderaxespad=0.,
+                       fontsize='medium',
+                       frameon=True, # Add a frame
+                       framealpha=0.9, # Semi-transparent frame
+                       edgecolor='#cccccc', # Frame border color
+                       facecolor='white' # Frame background color
+                       )
+        self.figure.tight_layout(rect=[0, 0, 0.95, 1]) # Adjust layout to make space for the legend
         self.figure.canvas.draw()
+
 
     def on_map_click(self, event):
         if event.inaxes != self.ax: return
@@ -661,7 +692,7 @@ class NavigationGUI(QMainWindow):
 
     def calculate_path(self):
         if not self.selected_start or not self.selected_goal:
-            QMessageBox.showerror(self, "错误", "请先选择起点和终点") # 使用 QMessageBox
+            QMessageBox.warning(self, "错误", "请先选择起点和终点") # Using QMessageBox.warning
             return
 
         # 获取路径优化目标的选择
@@ -738,7 +769,7 @@ class NavigationGUI(QMainWindow):
             self.draw_map()
             self.display_path_info()
         except Exception as e:
-            QMessageBox.showerror(self, "错误", f"路径计算失败: {str(e)}")
+            QMessageBox.critical(self, "错误", f"路径计算失败: {str(e)}") # Using QMessageBox.critical
             import traceback
             traceback.print_exc() # 打印详细错误信息到控制台
         finally:
